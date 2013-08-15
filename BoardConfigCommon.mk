@@ -28,6 +28,7 @@ TARGET_CPU_SMP := true
 TARGET_ARCH := arm
 TARGET_ARCH_VARIANT := armv7-a-neon
 TARGET_ARCH_VARIANT_CPU := cortex-a9
+TARGET_CPU_VARIANT := cortex-a9
 ARCH_ARM_HAVE_TLS_REGISTER := true
 TARGET_GLOBAL_CFLAGS += -mtune=cortex-a9 -mfpu=neon -mfloat-abi=softfp
 TARGET_GLOBAL_CPPFLAGS += -mtune=cortex-a9 -mfpu=neon -mfloat-abi=softfp
@@ -46,7 +47,7 @@ ENABLE_WEBGL := true
 BOARD_USES_HWCOMPOSER := true
 BOARD_USE_SYSFS_VSYNC_NOTIFICATION := true
 # set if the target supports FBIO_WAITFORVSYNC
-#TARGET_HAS_WAITFORVSYNC := true
+TARGET_HAS_WAITFORVSYNC := true
 
 # Setup custom omap4xxx defines
 BOARD_USE_CUSTOM_LIBION := true

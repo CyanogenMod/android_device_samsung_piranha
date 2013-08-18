@@ -35,6 +35,7 @@ PRODUCT_PACKAGES += \
     libnetcmdiface \
     tinyplay \
     tinycap \
+    macloader \
     tinymix
 
 # Support for Browser's saved page feature. This allows

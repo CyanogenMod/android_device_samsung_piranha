@@ -39,9 +39,7 @@
 ### ###########################################################################
 
 SYS_CFLAGS := \
- -fno-short-enums \
- -funwind-tables \
- -D__linux__ \
+ -fno-short-enums -D__linux__ \
  -I$(ANDROID_ROOT)/bionic/libc/arch-$(ANDROID_ARCH)/include \
  -I$(ANDROID_ROOT)/bionic/libc/include \
  -I$(ANDROID_ROOT)/bionic/libc/kernel/common \

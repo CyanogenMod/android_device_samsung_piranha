@@ -62,7 +62,7 @@ extern "C" {
 
 
 /* setup conditional pageable / non-pageable select */
-	/* Other OSs only need pageable */
+	/* Non-Vista OSs only need pageable */
 	#define PVRSRV_PAGEABLE_SELECT		PVRSRV_OS_PAGEABLE_HEAP
 
 /******************************************************************************

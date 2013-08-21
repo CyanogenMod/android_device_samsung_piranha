@@ -52,13 +52,6 @@ else ifeq ($(TARGET_SGX),544)
  SGX_FEATURE_MP := 1
  SGX_FEATURE_SYSTEM_CACHE := 1
  SGX_FEATURE_MP_CORE_COUNT := 2
-else ifeq ($(TARGET_SGX),544es2)
- SGXCORE := 544
- SGX_CORE_REV := 116
- HAL_VARIANT := omap5
- SGX_FEATURE_MP := 1
- SGX_FEATURE_SYSTEM_CACHE := 1
- SGX_FEATURE_MP_CORE_COUNT := 2
 else
  #default config
  SGXCORE := 540
@@ -184,6 +177,15 @@ include ../common/omap4.mk
 # Not all OMAP4 kernels have a compatible DVFS framework
 #
 $(eval $(call TunableKernelConfigC,SYS_OMAP4_HAS_DVFS_FRAMEWORK,))
+ifeq ($(SYS_OMAP4_HAS_DVFS_FRAMEWORK),1)
+$(eval $(call KernelConfigC,SYS_DVFS_IDLE_MODE,1))
+$(eval $(call KernelConfigC,SYS_DVFS_IDLE_TIMEOUT,1))
+$(eval $(call KernelConfigC,SYS_DVFS_ACTIVE_MODE,0))
+$(eval $(call KernelConfigC,SYS_DVFS_ACTIVE_DC_LENGTH,18))
+$(eval $(call KernelConfigC,SYS_DVFS_ACTIVE_DC_DEC_WAIT,3000))
+$(eval $(call KernelConfigC,SYS_DVFS_ACTIVE_DC_DEC_REPS,5))
+$(eval $(call KernelConfigC,SYS_DVFS_ACTIVE_DC_INC_WAIT,2000))
+endif
 
 # If set, services allows two flips to enter the processing queue,
 # and does not add read dependencies to the set of buffers last

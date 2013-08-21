@@ -1,5 +1,5 @@
 /*************************************************************************/ /*!
-@Title          Perf initialisation
+@Title          Vista-specific Perf initialisation
 @Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
 @License        Dual MIT/GPLv2
 
@@ -43,6 +43,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "img_types.h"
 
+/*
+ * Note, WDDM needs to perform initialisation and deinitialisation
+ * in order to support HW performance measurement.  Other platforms
+ * should not need to do anything in these functions.
+ */
 #define PERFINIT()
 #define PERFDEINIT()
 

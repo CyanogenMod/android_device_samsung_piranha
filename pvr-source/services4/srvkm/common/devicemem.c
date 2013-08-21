@@ -535,13 +535,14 @@ static PVRSRV_ERROR AllocDeviceMem(IMG_HANDLE		hDevCookie,
 
 	psMemBlock = &(psMemInfo->sMemBlk);
 
-	/* ION and DYNAMIC re-mapping
-	 * require the PAGEABLE FLAG set
+	/* ION, SPARSE and DYNAMIC re-mapping
+	 * all require PAGABLE FLAG
 	 */
 	if (ui32Flags & (PVRSRV_MEM_ION |
+			PVRSRV_MEM_SPARSE |
 			PVRSRV_HAP_NO_GPU_VIRTUAL_ON_ALLOC))
 	{
-		ui32Flags |= PVRSRV_HAP_GPU_PAGEABLE;
+		psMemInfo->ui32Flags = ui32Flags | PVRSRV_HAP_GPU_PAGEABLE;
 	}
 
 	/* BM supplied Device Virtual Address with physical backing RAM */
@@ -1758,18 +1759,6 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVWrapExtMemoryKM(IMG_HANDLE				hDevCookie,
   		   we shouldn't trust what the user says here
   		*/
 		bPhysContig = IMG_FALSE;
-	}
-	else
-	{
-		if (psExtSysPAddr)
-		{
-			PVR_DPF((PVR_DBG_ERROR, "PVRSRVWrapExtMemoryKM: invalid parameter, physical address passing is not supported"));
-		}
-		else
-		{
-			PVR_DPF((PVR_DBG_ERROR, "PVRSRVWrapExtMemoryKM: invalid parameter, no address specificed"));
-		}
-		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
 
 	/* Choose the heap to map to */

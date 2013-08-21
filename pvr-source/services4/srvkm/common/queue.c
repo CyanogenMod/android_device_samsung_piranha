@@ -1082,13 +1082,10 @@ PVRSRV_ERROR PVRSRVProcessCommand(SYS_DATA			*psSysData,
 		*/
 		psCmdCompleteData->bInUse = IMG_FALSE;
 		eError = PVRSRV_ERROR_CMD_NOT_PROCESSED;
-		PVR_LOG(("Failed to submit command from queue processor, this could cause sync wedge!"));
 	}
-	else
-	{
-		/* Increment the CCB offset */
-		psDeviceCommandData[psCommand->CommandType].ui32CCBOffset = (ui32CCBOffset + 1) % DC_NUM_COMMANDS_PER_TYPE;
-	}
+	
+	/* Increment the CCB offset */
+	psDeviceCommandData[psCommand->CommandType].ui32CCBOffset = (ui32CCBOffset + 1) % DC_NUM_COMMANDS_PER_TYPE;
 
 	return eError;
 }
@@ -1217,9 +1214,6 @@ IMG_VOID PVRSRVFreeCommandCompletePacketKM(IMG_HANDLE	hCmdCookie,
 
 #endif /* (SUPPORT_CUSTOM_SWAP_OPERATIONS) */
 
-#if defined(SYS_OMAP4_HAS_DVFS_FRAMEWORK)
-extern void sgxfreq_notif_sgx_frame_done(void);
-#endif /* (SYS_OMAP4_HAS_DVFS_FRAMEWORK) */
 
 /*!
 ******************************************************************************
@@ -1242,9 +1236,7 @@ IMG_VOID PVRSRVCommandCompleteKM(IMG_HANDLE	hCmdCookie,
 	COMMAND_COMPLETE_DATA	*psCmdCompleteData = (COMMAND_COMPLETE_DATA *)hCmdCookie;
 	SYS_DATA				*psSysData;
 
-#if defined(SYS_OMAP4_HAS_DVFS_FRAMEWORK)
-	sgxfreq_notif_sgx_frame_done();
-#endif /* (SYS_OMAP4_HAS_DVFS_FRAMEWORK) */
+	SysDSSReturnFrame();
 
 	SysAcquireData(&psSysData);
 

@@ -37,8 +37,8 @@ TARGET_GLOBAL_CPPFLAGS += -mtune=cortex-a9 -mfpu=neon -mfloat-abi=softfp
 TARGET_BOARD_PLATFORM := omap4
 
 # RIL
-#BOARD_PROVIDES_LIBRIL := true
-#BOARD_MODEM_TYPE := xmm6262
+BOARD_PROVIDES_LIBRIL := true
+BOARD_MODEM_TYPE := xmm6262
 
 # Enable WEBGL in WebKit
 ENABLE_WEBGL := true

@@ -48,8 +48,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "sgxutils.h"
 #include "pdump_km.h"
 
+extern IMG_UINT32 g_ui32HostIRQCountSample;
 int powering_down = 0;
-
 
 #if defined(SUPPORT_HW_RECOVERY)
 static PVRSRV_ERROR SGXAddTimer(PVRSRV_DEVICE_NODE		*psDeviceNode,
@@ -154,11 +154,7 @@ static PVRSRV_ERROR SGXUpdateTimingInfo(PVRSRV_DEVICE_NODE	*psDeviceNode)
 #endif /* SUPPORT_HW_RECOVERY*/
 
 	/* Copy the SGX clock speed for use in the kernel */
-#if !defined(SYS_OMAP4_HAS_DVFS_FRAMEWORK)
 	psDevInfo->ui32CoreClockSpeed = psSGXTimingInfo->ui32CoreClockSpeed;
-#else /* !defined(SYS_OMAP4_HAS_DVFS_FRAMEWORK) */
-	/* System layer DVFS will update clock speed on DevInfo each time it changes. */
-#endif /* !defined(SYS_OMAP4_HAS_DVFS_FRAMEWORK) */
 	psDevInfo->ui32uKernelTimerClock = psSGXTimingInfo->ui32CoreClockSpeed / psSGXTimingInfo->ui32uKernelFreq;
 
 	/* FIXME: no need to duplicate - remove it from psDevInfo */
@@ -337,8 +333,6 @@ PVRSRV_ERROR SGXPrePowerState (IMG_HANDLE				hDevHandle,
 			PDUMPCOMMENT("SGX idle request");
 		}
 
-		powering_down = 1;
-
 		sCommand.ui32Data[1] = ui32PowerCmd;
 
 		eError = SGXScheduleCCBCommand(psDeviceNode, SGXMKIF_CMD_POWER, &sCommand, KERNEL_ID, 0, IMG_NULL, IMG_FALSE);
@@ -363,7 +357,11 @@ PVRSRV_ERROR SGXPrePowerState (IMG_HANDLE				hDevHandle,
 		}
 		#endif /* NO_HARDWARE */
 
-		psDevInfo->bSGXIdle = IMG_TRUE;
+		if (psDevInfo->bSGXIdle == IMG_FALSE)
+		{
+			psDevInfo->bSGXIdle = IMG_TRUE;
+			SysSGXIdleEntered();
+		}
 
 		#if defined(PDUMP)
 		PDUMPCOMMENT("TA/3D CCB Control - Wait for power event on uKernel.");
@@ -376,6 +374,20 @@ PVRSRV_ERROR SGXPrePowerState (IMG_HANDLE				hDevHandle,
 					MAKEUNIQUETAG(psDevInfo->psKernelSGXHostCtlMemInfo));
 		#endif /* PDUMP */
 
+		/* Wait for the pending ukernel to host interrupts to come back. */
+		#if !defined(NO_HARDWARE)
+		if (PollForValueKM(&g_ui32HostIRQCountSample,
+							psDevInfo->psSGXHostCtl->ui32InterruptCount,
+							0xffffffff,
+							MAX_HW_TIME_US,
+							MAX_HW_TIME_US/WAIT_TRY_COUNT,
+							IMG_FALSE) != PVRSRV_OK)
+		{
+			PVR_DPF((PVR_DBG_ERROR,"SGXPrePowerState: Wait for pending interrupts failed."));
+			SGXDumpDebugInfo(psDevInfo, IMG_FALSE);
+			PVR_DBG_BREAK;
+		}
+		#endif /* NO_HARDWARE */
 #if defined(SGX_FEATURE_MP)
 		ui32CoresEnabled = ((OSReadHWReg(psDevInfo->pvRegsBaseKM, EUR_CR_MASTER_CORE) & EUR_CR_MASTER_CORE_ENABLE_MASK) >> EUR_CR_MASTER_CORE_ENABLE_SHIFT) + 1;
 #else
@@ -403,6 +415,8 @@ PVRSRV_ERROR SGXPrePowerState (IMG_HANDLE				hDevHandle,
 							  psDevInfo->ui32MasterClkGateStatus2Mask,
 							  "Wait for SGX master clock gating (2)");
 		#endif /* SGX_FEATURE_MP */
+
+		powering_down = 1;
 
 		if (eNewPowerState == PVRSRV_DEV_POWER_STATE_OFF)
 		{
@@ -551,6 +565,18 @@ PVRSRV_ERROR SGXPreClockSpeedChange (IMG_HANDLE				hDevHandle,
 				PDUMPRESUME();
 				return eError;
 			}
+		}
+		else
+		{
+			#if defined(SUPPORT_HW_RECOVERY)
+			PVRSRV_ERROR	eError;
+
+			eError = OSDisableTimer(psDevInfo->hTimer);
+			if (eError != PVRSRV_OK)
+			{
+				PVR_DPF((PVR_DBG_ERROR,"SGXStartTimer : Failed to enable host timer"));
+			}
+			#endif /* SUPPORT_HW_RECOVERY */
 		}
 	}
 

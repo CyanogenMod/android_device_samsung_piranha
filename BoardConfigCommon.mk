@@ -21,6 +21,10 @@ BOARD_VENDOR := samsung
 PRODUCT_VENDOR_KERNEL_HEADERS := $(COMMON_PATH)/kernel-headers
 TARGET_SPECIFIC_HEADER_PATH := $(COMMON_PATH)/include
 
+# Camera
+TARGET_RELEASE_CPPFLAGS += -DNEEDS_VECTORIMPL_SYMBOLS
+COMMON_GLOBAL_CFLAGS += -DREFBASE_JB_MR1_COMPAT_SYMBOLS
+
 # CPU
 TARGET_CPU_ABI := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
@@ -33,18 +37,23 @@ ARCH_ARM_HAVE_TLS_REGISTER := true
 TARGET_GLOBAL_CFLAGS += -mtune=cortex-a9 -mfpu=neon -mfloat-abi=softfp
 TARGET_GLOBAL_CPPFLAGS += -mtune=cortex-a9 -mfpu=neon -mfloat-abi=softfp
 
+#Fonts
+EXTENDED_FONT_FOOTPRINT := true
+
 # Platform
 TARGET_BOARD_PLATFORM := omap4
 
 # RIL
 BOARD_PROVIDES_LIBRIL := true
 BOARD_MODEM_TYPE := xmm6262
+BOARD_RIL_CLASS := ../../../device/samsung/piranha/ril
 
 # Enable WEBGL in WebKit
 ENABLE_WEBGL := true
 
 # HWComposer
 BOARD_USES_HWCOMPOSER := true
+BOARD_USE_CUSTOM_HWC := true
 BOARD_USE_SYSFS_VSYNC_NOTIFICATION := true
 # set if the target supports FBIO_WAITFORVSYNC
 TARGET_HAS_WAITFORVSYNC := true

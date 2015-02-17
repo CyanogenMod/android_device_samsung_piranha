@@ -12,7 +12,6 @@ system/vendor/lib/liblvverx.so
 system/vendor/lib/liblvvetx.so
 system/vendor/lib/libpvr2d_SGX544_112.so
 system/vendor/lib/libpvrANDROID_WSEGL_SGX544_112.so
-system/vendor/lib/libPVRScopeServices.so
 system/vendor/lib/libPVRScopeServices_SGX544_112.so
 system/vendor/lib/libsrv_init_SGX544_112.so
 system/vendor/lib/libsrv_um_SGX544_112.so

@@ -21,11 +21,14 @@ DEVICE_PACKAGE_OVERLAYS += $(COMMON_PATH)/overlay
 $(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
 # Omap4 Packages
 PRODUCT_PACKAGES += \
-	libedid \
-	libion_ti \
+    libedid \
+    libion_ti \
     libstagefrighthw \
     smc_pa_ctrl \
-    tf_daemon
+    tf_daemon \
+    libcorkscrew \
+    pvrsrvinit \
+    libPVRScopeServices.so
 
 PRODUCT_PACKAGES += \
     audio.a2dp.default \
@@ -53,15 +56,17 @@ PRODUCT_PACKAGES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     com.ti.omap_enhancement=true \
     omap.enhancement=true \
-    ro.telephony.ril_class=SamsungExynos4RIL \
+    ro.telephony.ril_class=SamsungOmap4RIL \
     mobiledata.interfaces=pdp0,wlan0,gprs,ppp0 \
     ro.telephony.call_ring.multiple=false \
-    ro.telephony.call_ring.delay=3000
+    ro.telephony.call_ring.delay=3000 \
+    camera2.portability.force_api=1
 
 # Set default USB interface
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     persist.sys.usb.config=mtp
 
+# Include omap4 specific parts
 $(call inherit-product, hardware/ti/omap4xxx/omap4.mk)
 
 # Include non-opensource parts if available

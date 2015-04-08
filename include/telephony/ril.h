@@ -46,6 +46,7 @@ extern "C" {
 #define MAX_CLIENT_ID_LENGTH 2
 #define MAX_DEBUG_SOCKET_NAME_LENGTH 12
 #define MAX_QEMU_PIPE_NAME_LENGTH  11
+#define SIM_COUNT 1
 
 typedef void * RIL_Token;
 
